@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quinielas México</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; padding-bottom: 50px; }
+        .header { background: linear-gradient(to right, #ce1126 33%, #ffffff 33%, #ffffff 66%, #006847 66%); padding: 25px; text-align: center; border-bottom: 2px solid #ccc; }
+        .partido-card { background: white; margin: 10px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .equipos { font-weight: bold; margin-bottom: 10px; display: block; text-align: center; font-size: 14px; }
+        .opciones { display: flex; justify-content: center; gap: 15px; }
+        .btn-opcion { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #007bff; background: white; color: #007bff; font-weight: bold; }
+        .btn-opcion.seleccionado { background: #007bff; color: white; }
+        .footer { padding: 20px; text-align: center; }
+        input { width: 90%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+        .btn-wa { background: #25D366; color: white; width: 100%; padding: 18px; border: none; border-radius: 5px; font-weight: bold; font-size: 18px; margin-bottom: 10px; }
+        .btn-xl { background: #008000; color: white; width: 100%; padding: 18px; border: none; border-radius: 5px; font-weight: bold; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <div class="header"><h2>LIGA MX JORNADA 11</h2></div>
+    <div id="contenedor">
+        <div class="partido-card"><span class="equipos">1. PUEBLA vs NECAXA</span><div class="opciones"><button class="btn-opcion" onclick="marcar(this, 1, 'L')">L</button><button class="btn-opcion" onclick="marcar(this, 1, 'E')">E</button><button class="btn-opcion" onclick="marcar(this, 1, 'V')">V</button></div></div>
+        <div class="partido-card"><span class="equipos">2. JUAREZ vs MONTERREY</span><div class="opciones"><button class="btn-opcion" onclick="marcar(this, 2, 'L')">L</button><button class="btn-opcion" onclick="marcar(this, 2, 'E')">E</button><button class="btn-opcion" onclick="marcar(this, 2, 'V')">V</button></div></div>
+        <div class="partido-card"><span class="equipos">3. SAN LUIS vs PACHUCA</span><div class="opciones"><button class="btn-opcion" onclick="marcar(this, 3, 'L')">L</button><button class="btn-opcion" onclick="marcar(this, 3, 'E')">E</button><button class="btn-opcion" onclick="marcar(this, 3, 'V')">V</button></div></div>
+        <div class="partido-card"><span class="equipos">4. CHIVAS vs SANTOS</span><div class="opciones"><button class="btn-opcion" onclick="marcar(this, 4, 'L')">L</button><button class="btn-opcion" onclick="marcar(this, 4, 'E')">E</button><button class="btn-opcion" onclick="marcar(this, 4, 'V')">V</button></div></div>
+    </div>
+    <div class="footer">
+        <input type="text" id="nombreParticipante" placeholder="NOMBRE DEL PARTICIPANTE">
+        <button class="btn-wa" onclick="enviarWhatsApp()">ENVIAR POR WHATSAPP</button>
+        <button class="btn-xl" onclick="descargarExcel()">DESCARGAR EXCEL</button>
+    </div>
+    <script>
+        let elecciones = {};
+        const MI_TELEFONO = "524531467407"; 
+        function marcar(boton, id, resultado) {
+            const fila = boton.parentElement;
+            const botones = fila.querySelectorAll('.btn-opcion');
+            botones.forEach(b => b.classList.remove('seleccionado'));
+            boton.classList.add('seleccionado');
+            const nombrePartido = boton.closest('.partido-card').querySelector('.equipos').innerText;
+            elecciones[id] = { "Partido": nombrePartido, "Pronóstico": resultado };
+        }
+        function enviarWhatsApp() {
+            const nombre = document.getElementById('nombreParticipante').value;
+            if (!nombre || Object.keys(elecciones).length < 4) return alert("Llena tu nombre y todos los partidos");
+            let mensaje = `*QUINIELA JORNADA 11*%0A*Nombre:* ${nombre}%0A%0A`;
+            Object.values(elecciones).forEach(p => { mensaje += `${p.Partido}: *${p.Pronóstico}*%0A`; });
+            window.open(`https://wa.me/${MI_TELEFONO}?text=${mensaje}`, '_blank');
+        }
+        function descargarExcel() {
+            const nombre = document.getElementById('nombreParticipante').value;
+            if (!nombre || Object.keys(elecciones).length < 4) return alert("Llena tu nombre y todos los partidos");
+            const hoja = XLSX.utils.json_to_sheet(Object.values(elecciones));
+            const libro = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(libro, hoja, "Quiniela");
+            XLSX.writeFile(libro, `Quiniela_${nombre}.xlsx`);
+        }
+    </script>
+</body>
+</html>
