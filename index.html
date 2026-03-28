@@ -1,63 +1,255 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quinielas México</title>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; padding-bottom: 50px; }
-        .header { background: linear-gradient(to right, #ce1126 33%, #ffffff 33%, #ffffff 66%, #006847 66%); padding: 25px; text-align: center; border-bottom: 2px solid #ccc; }
-        .partido-card { background: white; margin: 10px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .equipos { font-weight: bold; margin-bottom: 10px; display: block; text-align: center; font-size: 14px; }
-        .opciones { display: flex; justify-content: center; gap: 15px; }
-        .btn-opcion { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #007bff; background: white; color: #007bff; font-weight: bold; }
-        .btn-opcion.seleccionado { background: #007bff; color: white; }
-        .footer { padding: 20px; text-align: center; }
-        input { width: 90%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
-        .btn-wa { background: #25D366; color: white; width: 100%; padding: 18px; border: none; border-radius: 5px; font-weight: bold; font-size: 18px; margin-bottom: 10px; }
-        .btn-xl { background: #008000; color: white; width: 100%; padding: 18px; border: none; border-radius: 5px; font-weight: bold; font-size: 18px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quinielas Liga MX</title>
+
+<style>
+body{
+  font-family: Arial;
+  background:#0f172a;
+  color:white;
+  margin:0;
+  text-align:center;
+}
+
+.header{
+  background:#1e293b;
+  padding:15px;
+}
+
+h1{
+  margin:0;
+  color:#38bdf8;
+}
+
+.container{
+  padding:20px;
+  max-width:600px;
+  margin:auto;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border-radius:10px;
+  border:none;
+  background:#e5e7eb;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border-radius:10px;
+  border:none;
+  background:#38bdf8;
+  font-weight:bold;
+}
+
+.partido{
+  background:#1e293b;
+  margin:10px 0;
+  padding:10px;
+  border-radius:12px;
+}
+
+.opciones button{
+  width:30%;
+  margin:2px;
+}
+
+.seleccionado{
+  background:#22c55e !important;
+}
+
+.btn-whatsapp{
+  background:#25D366;
+  color:white;
+}
+
+.lista{
+  background:#020617;
+  margin-top:20px;
+  padding:10px;
+  border-radius:10px;
+  text-align:left;
+  font-size:14px;
+}
+</style>
 </head>
+
 <body>
-    <div class="header"><h2>LIGA MX JORNADA 11</h2></div>
-    <div id="contenedor">
-        <div class="partido-card"><span class="equipos">1. PUEBLA vs NECAXA</span><div class="opciones"><button class="btn-opcion" onclick="marcar(this, 1, 'L')">L</button><button class="btn-opcion" onclick="marcar(this, 1, 'E')">E</button><button class="btn-opcion" onclick="marcar(this, 1, 'V')">V</button></div></div>
-        <div class="partido-card"><span class="equipos">2. JUAREZ vs MONTERREY</span><div class="opciones"><button class="btn-opcion" onclick="marcar(this, 2, 'L')">L</button><button class="btn-opcion" onclick="marcar(this, 2, 'E')">E</button><button class="btn-opcion" onclick="marcar(this, 2, 'V')">V</button></div></div>
-        <div class="partido-card"><span class="equipos">3. SAN LUIS vs PACHUCA</span><div class="opciones"><button class="btn-opcion" onclick="marcar(this, 3, 'L')">L</button><button class="btn-opcion" onclick="marcar(this, 3, 'E')">E</button><button class="btn-opcion" onclick="marcar(this, 3, 'V')">V</button></div></div>
-        <div class="partido-card"><span class="equipos">4. CHIVAS vs SANTOS</span><div class="opciones"><button class="btn-opcion" onclick="marcar(this, 4, 'L')">L</button><button class="btn-opcion" onclick="marcar(this, 4, 'E')">E</button><button class="btn-opcion" onclick="marcar(this, 4, 'V')">V</button></div></div>
+
+<div class="header">
+  <h1>Quinielas Liga MX</h1>
+</div>
+
+<div class="container">
+
+<input type="text" value="Jornada 10" disabled>
+<input type="text" value="$10 pesos por quiniela" disabled>
+<input type="text" value="Cierre: Viernes 20:00" disabled>
+<input type="text" value="Informes al +52 55 7224 6040" disabled>
+
+<button onclick="abrirFacebook()">Grupo de Facebook</button>
+
+<input type="text" id="total" placeholder="Total de quinielas" disabled>
+<input type="text" id="nombre" placeholder="Nombre del participante">
+
+<div id="partidos"></div>
+
+<button onclick="agregarQuiniela()">Agregar Quiniela</button>
+<button onclick="limpiar()">Limpiar</button>
+<button onclick="aleatorio()">Llenado Aleatorio</button>
+
+<button class="btn-whatsapp" onclick="enviarWhats()">Enviar por WhatsApp</button>
+
+<div id="lista" class="lista"></div>
+
+</div>
+
+<script>
+
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxJ7ulso9mbznF9azzWBIOhwsnqlrNX9flSVcXvzkQZGXUGC_z78UiPyC1HzitA-Ct-OA/exec";
+
+function abrirFacebook(){
+  window.open("https://www.facebook.com/share/g/18kcwQzkPk/?mibextid=wwXIfr", "_blank");
+}
+
+const contenedor = document.getElementById("partidos");
+
+for(let i=1;i<=9;i++){
+  contenedor.innerHTML += `
+    <div class="partido">
+      <p>Partido ${i}</p>
+      <div class="opciones">
+        <button onclick="toggle(this)">L</button>
+        <button onclick="toggle(this)">E</button>
+        <button onclick="toggle(this)">V</button>
+      </div>
     </div>
-    <div class="footer">
-        <input type="text" id="nombreParticipante" placeholder="NOMBRE DEL PARTICIPANTE">
-        <button class="btn-wa" onclick="enviarWhatsApp()">ENVIAR POR WHATSAPP</button>
-        <button class="btn-xl" onclick="descargarExcel()">DESCARGAR EXCEL</button>
-    </div>
-    <script>
-        let elecciones = {};
-        const MI_TELEFONO = "524531467407"; 
-        function marcar(boton, id, resultado) {
-            const fila = boton.parentElement;
-            const botones = fila.querySelectorAll('.btn-opcion');
-            botones.forEach(b => b.classList.remove('seleccionado'));
-            boton.classList.add('seleccionado');
-            const nombrePartido = boton.closest('.partido-card').querySelector('.equipos').innerText;
-            elecciones[id] = { "Partido": nombrePartido, "Pronóstico": resultado };
-        }
-        function enviarWhatsApp() {
-            const nombre = document.getElementById('nombreParticipante').value;
-            if (!nombre || Object.keys(elecciones).length < 4) return alert("Llena tu nombre y todos los partidos");
-            let mensaje = `*QUINIELA JORNADA 11*%0A*Nombre:* ${nombre}%0A%0A`;
-            Object.values(elecciones).forEach(p => { mensaje += `${p.Partido}: *${p.Pronóstico}*%0A`; });
-            window.open(`https://wa.me/${MI_TELEFONO}?text=${mensaje}`, '_blank');
-        }
-        function descargarExcel() {
-            const nombre = document.getElementById('nombreParticipante').value;
-            if (!nombre || Object.keys(elecciones).length < 4) return alert("Llena tu nombre y todos los partidos");
-            const hoja = XLSX.utils.json_to_sheet(Object.values(elecciones));
-            const libro = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(libro, hoja, "Quiniela");
-            XLSX.writeFile(libro, `Quiniela_${nombre}.xlsx`);
-        }
-    </script>
+  `;
+}
+
+function toggle(btn){
+  btn.classList.toggle("seleccionado");
+}
+
+function quinielaCompleta(){
+  let ok = true;
+  document.querySelectorAll(".opciones").forEach(op=>{
+    if(op.querySelectorAll(".seleccionado").length === 0){
+      ok = false;
+    }
+  });
+  return ok;
+}
+
+function generarCombinaciones(){
+  let partidos = [];
+
+  document.querySelectorAll(".opciones").forEach(op=>{
+    let sel = [...op.querySelectorAll(".seleccionado")].map(b=>b.innerText);
+    partidos.push(sel);
+  });
+
+  let resultado = [[]];
+
+  partidos.forEach(opciones=>{
+    let temp = [];
+    resultado.forEach(r=>{
+      opciones.forEach(o=>{
+        temp.push([...r, o]);
+      });
+    });
+    resultado = temp;
+  });
+
+  return resultado;
+}
+
+function agregarQuiniela(){
+
+  let nombre = document.getElementById("nombre").value.trim();
+
+  if(nombre === ""){
+    alert("Debes ingresar el nombre");
+    return;
+  }
+
+  if(!quinielaCompleta()){
+    alert("Selecciona todos los partidos");
+    return;
+  }
+
+  let combinaciones = generarCombinaciones();
+  let lista = document.getElementById("lista");
+
+  lista.innerHTML = "";
+
+  combinaciones.forEach((c,i)=>{
+    lista.innerHTML += `#${i+1} → ${c.join(" - ")}<br>`;
+  });
+
+  document.getElementById("total").value = combinaciones.length;
+}
+
+function limpiar(){
+  location.reload();
+}
+
+function aleatorio(){
+  document.querySelectorAll(".opciones").forEach(op=>{
+    let botones = op.querySelectorAll("button");
+    botones.forEach(b => b.classList.remove("seleccionado"));
+    let rand = Math.floor(Math.random()*3);
+    botones[rand].classList.add("seleccionado");
+  });
+}
+
+function enviarWhats(){
+
+  let nombre = document.getElementById("nombre").value.trim();
+  let lista = document.getElementById("lista").innerText || "";
+  let total = document.getElementById("total").value || 0;
+
+  if(nombre === ""){
+    alert("Debes ingresar el nombre antes de enviar");
+    return;
+  }
+
+  if(lista === ""){
+    alert("Primero debes agregar una quiniela");
+    return;
+  }
+
+  let cantidad = parseInt(total) || 0;
+  let pago = cantidad * 10;
+
+  let mensaje = `📊 Quiniela Liga MX\n\n👤 Participante: ${nombre}\n\n📋 Selecciones:\n${lista}\n\n📊 Total: ${cantidad} quinielas\n💰 Total a pagar: $${pago} MXN`;
+
+  let combinaciones = generarCombinaciones();
+
+  fetch(URL_SCRIPT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      nombre: nombre,
+      quiniela: combinaciones
+    })
+  });
+
+  let numero = "525610791509";
+  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`);
+
+}
+
+</script>
+
 </body>
 </html>
